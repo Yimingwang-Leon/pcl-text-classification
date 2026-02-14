@@ -31,7 +31,7 @@ MIN_DELTA = 1e-4
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-MODEL_NAME = "FacebookAI/roberta-large"
+MODEL_NAME = "microsoft/deberta-v3-large"
 # Load data
 train_df, val_df = load_official_split()
 
@@ -93,7 +93,9 @@ official_dev_loader = DataLoader(
 
 model = AutoModelForSequenceClassification.from_pretrained(
     MODEL_NAME,
-    num_labels=2
+    num_labels=2,
+    use_safetensors=True,
+    torch_dtype=torch.float32
 ).to(device)
 
 decay, no_decay = [], []
@@ -128,11 +130,11 @@ def configure_optimizers(model, weight_decay, learning_rate, device):
         )
     return optimizer
 
-max_lr = 1e-5
-min_lr = 2e-6
-steps_per_epoch = len(train_loader)  
-max_steps = EPOCHS * steps_per_epoch  
-warmup_steps = int(0.2 * max_steps)  
+max_lr = 3e-5
+min_lr = 3e-6
+steps_per_epoch = len(train_loader)
+max_steps = EPOCHS * steps_per_epoch
+warmup_steps = int(0.06 * max_steps)
 
 def get_lr(it):
     # 1) Linear warmup
@@ -153,7 +155,7 @@ base_model_prefix = model.base_model_prefix
 base_model = getattr(model, base_model_prefix)
 for param in base_model.embeddings.parameters():
     param.requires_grad = False
-freeze_until_layer = 12
+freeze_until_layer = 20
 for i, layer in enumerate(base_model.encoder.layer):
     if i < freeze_until_layer:
         for param in layer.parameters():
@@ -193,6 +195,7 @@ def train_one_epoch(model, loader, optimizer, criterion, global_step):
         logits = model(input_ids=input_ids, attention_mask=attention_mask).logits
         loss = criterion(logits.float(), labels)
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
 
         total_loss += loss.item()

@@ -1,8 +1,9 @@
 from pathlib import Path
-
+from torch.utils.data import Dataset
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
+import torch
+import re
 
 def load_raw_data(path: str = "data/raw/dontpatronizeme_pcl.tsv") -> pd.DataFrame:
     data = pd.read_csv(path, skiprows=4, sep="\t", header=None, engine="python")
@@ -29,6 +30,11 @@ def split_data(
     return train_df, dev_df
 
 
+def clean_text(text):
+    text = re.sub(r"<[^>]+>", " ", text)  
+    text = re.sub(r"\s+", " ", text)       
+    return text.strip()
+
 def save_splits(
     train_df: pd.DataFrame, dev_df: pd.DataFrame, out_dir: str = "data/clean"
 ) -> None:
@@ -46,6 +52,7 @@ def load_official_split(
     """Load data using the official SemEval train/dev split."""
     data = load_raw_data(raw_path)
     data = binarize(data)
+    data["text"] = data["text"].apply(clean_text)
 
     train_ids = pd.read_csv(train_ids_path)["par_id"].values
     dev_ids = pd.read_csv(dev_ids_path)["par_id"].values
@@ -61,9 +68,35 @@ def load_test_data(
     """Load the official test set (no labels)."""
     data = pd.read_csv(test_path, sep="\t", header=None, engine="python")
     data.columns = ["test_id", "art_id", "keyword", "country_code", "text"]
+    data["text"] = data["text"].apply(clean_text)
     return data
 
+class PCLDataset(Dataset):
+    def __init__(self, texts, tokenizer, labels, max_length=256):
+        self.texts = texts
+        self.tokenizer = tokenizer
+        self.labels = labels
+        self.max_length = max_length
 
+    def __len__(self):
+        return len(self.texts)
+    
+    def __getitem__(self, idx):
+        enc = self.tokenizer(
+            self.texts[idx],
+            max_length = self.max_length,
+            padding="max_length",
+            truncation=True,
+            return_tensors="pt"
+        )
+
+        item = {
+            "input_ids": enc["input_ids"].squeeze(0), # (seq_len, )
+            "attention_mask": enc["attention_mask"].squeeze(0), # (seq_len, )
+            "label": torch.tensor(self.labels[idx], dtype=torch.long)
+        }
+        
+        return item
 if __name__ == "__main__":
     train_df, dev_df = load_official_split()
     print(f"Train: {len(train_df)}, Dev: {len(dev_df)}")

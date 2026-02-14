@@ -32,3 +32,7 @@ dontpatronizeme/
 
 dev_semeval_parids-labels.csv
 train_semeval_parids-labels.csv
+
+models/
+
+BestModel/
