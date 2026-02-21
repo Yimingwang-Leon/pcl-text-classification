@@ -130,7 +130,7 @@ Two ablation conditions (see [`ablation/results.txt`](ablation/results.txt)):
 |-----------|--------|-------|
 | Full model (w/ augmentation) | [YOUR DEV F1] | BestModel |
 | no_aug | 0.6009 | training data without augmentation |
-| no_freeze | 0.5955 | all layers trainable |
+| no_freeze | 0.6125 | all layers trainable |
 | no_threshold | 0.5926 | fixed threshold 0.5 |
 
 To re-run experiments (seed is fixed at 42, but results may vary slightly due to GPU non-determinism):
