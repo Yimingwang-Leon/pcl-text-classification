@@ -46,8 +46,8 @@ def save_splits(
 
 def load_official_split(
     raw_path: str = "data/raw/dontpatronizeme_pcl.tsv",
-    train_ids_path: str = "train_semeval_parids-labels.csv",
-    dev_ids_path: str = "dev_semeval_parids-labels.csv",
+    train_ids_path: str = "data/raw/train_semeval_parids-labels.csv",
+    dev_ids_path: str = "data/raw/dev_semeval_parids-labels.csv",
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Load data using the official SemEval train/dev split."""
     data = load_raw_data(raw_path)
@@ -63,7 +63,7 @@ def load_official_split(
 
 
 def load_test_data(
-    test_path: str = "dontpatronizeme/semeval-2022/TEST/task4_test.tsv",
+    test_path: str = "data/raw/task4_test.tsv",
 ) -> pd.DataFrame:
     """Load the official test set (no labels)."""
     data = pd.read_csv(test_path, sep="\t", header=None, engine="python")
@@ -97,6 +97,7 @@ class PCLDataset(Dataset):
         }
         
         return item
+    
 if __name__ == "__main__":
     train_df, dev_df = load_official_split()
     print(f"Train: {len(train_df)}, Dev: {len(dev_df)}")

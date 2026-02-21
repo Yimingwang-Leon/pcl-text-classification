@@ -1,0 +1,3 @@
+no_aug               best_dev_f1=0.6009  thr=0.45
+no_freeze            best_dev_f1=0.6125  thr=0.65
+no_threshold         best_dev_f1=0.5926  thr=0.50

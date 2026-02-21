@@ -10,6 +10,7 @@ import inspect
 import math
 from pathlib import Path
 import random
+import pandas as pd
 
 seed = 42
 random.seed(seed)
@@ -24,14 +25,15 @@ SMOKE_TRAIN_N = 256
 SMOKE_VAL_N = 128
 BATCH_SIZE = 8 if DEBUG_SMOKE else 16
 EPOCHS = 1 if DEBUG_SMOKE else 20
-MAX_EPOCHS = 20          
-PATIENCE = 5      
+MAX_EPOCHS = 20 
+PATIENCE = 5
 MIN_DELTA = 1e-4        
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 MODEL_NAME = "FacebookAI/roberta-large"
+
 # Load data
 train_df, val_df = load_official_split()
 
@@ -47,6 +49,12 @@ train_texts, internal_texts, train_labels, internal_labels = train_test_split(
     random_state=42,
     stratify=train_labels_full
 )
+
+# Augmented data
+aug_df = pd.read_csv("data/aug/pcl_aug.csv")
+train_texts  = train_texts  + aug_df["text"].tolist()
+train_labels = train_labels + aug_df["binary_label"].tolist()
+print(f"Aug data loaded: {len(aug_df)} examples")
 
 official_dev_texts = val_df["text"].to_list()
 official_dev_labels = val_df["binary_label"].to_list()
@@ -85,12 +93,11 @@ internal_loader = DataLoader(
     pin_memory=True
 )
 official_dev_loader = DataLoader(
-    official_dev_dataset, 
-    batch_size=2*BATCH_SIZE, 
-    shuffle=False, 
-    num_workers=0, 
+    official_dev_dataset,
+    batch_size=2*BATCH_SIZE,
+    shuffle=False,
+    num_workers=0,
     pin_memory=True)
-
 model = AutoModelForSequenceClassification.from_pretrained(
     MODEL_NAME,
     num_labels=2
@@ -163,18 +170,8 @@ print(f"Successfully froze {base_model_prefix} embeddings and first {freeze_unti
 
 optimizer = configure_optimizers(model, weight_decay=0.01, learning_rate=2e-5, device=device)
 
-def build_criterion(train_labels, device):
-    '''In stage 2 we find training labels are unweighted, thus we adjust the loss weight for PCL labels'''
-    counts = np.bincount(train_labels, minlength=2) # [neg, pos]
-    total = counts.sum()
-
-    w0 = total / (2 * max(counts[0], 1))
-    w1 = total / (2 * max(counts[1], 1))
-    class_weights = torch.tensor([w0, w1], dtype=torch.float, device=device)
-
-    return torch.nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.1)
-
-criterion = build_criterion(train_labels, device)
+criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+print('Loss: CrossEntropyLoss(label_smoothing=0.1)')
 
 def train_one_epoch(model, loader, optimizer, criterion, global_step):
     model.train()
@@ -285,10 +282,11 @@ def best_threshold_by_f1(probs, golds, thresholds=None):
     return best_thr, float(best_f1)
 
 # Start training
+import time
 Path("BestModel").mkdir(parents=True, exist_ok=True)
-best_path = "BestModel/best_model.pt"
+run_tag = time.strftime("%m%d_%H%M")
 
-best_official_f1 = -1.0
+best_dev_f1 = -1.0
 best_thr = 0.5
 bad_epochs = 0
 global_step = 0
@@ -309,18 +307,19 @@ for epoch in range(1, MAX_EPOCHS + 1):
     p = tp / max(tp + fp, 1)
     r = tp / max(tp + fn, 1)
 
-    # DEV evaluation using SAME threshold 
+    # DEV evaluation using SAME threshold
     dev_probs, dev_golds = collect_pos_probs_and_labels(model, official_dev_loader, device)
     dev_preds = (dev_probs >= thr).astype(int)
     official_dev_f1_thr = f1_score(dev_golds, dev_preds, average="binary", pos_label=1)
 
-    improved = official_dev_f1_thr > (best_official_f1 + MIN_DELTA)
-
-    if improved:
-        best_official_f1 = official_dev_f1_thr
+    if official_dev_f1_thr > best_dev_f1 + MIN_DELTA:
+        best_dev_f1 = official_dev_f1_thr
         best_thr = thr
         bad_epochs = 0
-        torch.save(model.state_dict(), best_path)
+        if epoch > 3:
+            ckpt_path = f"BestModel/model_{run_tag}_ep{epoch:02d}_dev{official_dev_f1_thr:.4f}.pt"
+            torch.save(model.state_dict(), ckpt_path)
+            print(f"  >> Saved: {ckpt_path}")
     else:
         bad_epochs += 1
 
@@ -336,11 +335,8 @@ for epoch in range(1, MAX_EPOCHS + 1):
     if bad_epochs >= PATIENCE:
         print(
             f"Early stopping triggered at epoch {epoch}. "
-            f"Best internal_pos_f1={best_official_f1:.4f}, best_thr={best_thr:.2f} "
-            f"(saved to {best_path})"
+            f"Best dev_f1={best_dev_f1:.4f}, best_thr={best_thr:.2f}"
         )
         break
 
-print(
-    f"Best internal_pos_f1={best_official_f1:.4f}, best_thr={best_thr:.2f}, saved to {best_path}"
-)
+print(f"Best dev_f1={best_dev_f1:.4f}, best_thr={best_thr:.2f}")

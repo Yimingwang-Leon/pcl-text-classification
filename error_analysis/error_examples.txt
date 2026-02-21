@@ -1,0 +1,84 @@
+
+======================================================================
+  Both Wrong  (total=97)
+======================================================================
+[TRUE=PCL] keyword=homeless | main=0 base=0
+  His present " chambers " may be quite humble , but Shiyani has the tiny space very neatly organized and clean . Many people pass him by but do not manage to see him , because the space is partially hidden behind trees , which gives him a relative privacy . " There are many homeless sleeping around t
+
+[TRUE=PCL] keyword=disabled | main=0 base=0
+  Krueger recently harnessed that creativity to self-publish a book featuring the poems , artwork , photography and short stories of 16 ill or disabled artists from around the world . She hopes the book , which contains some of her own work as well , will show how talented disabled people can be .
+
+[TRUE=PCL] keyword=poor-families | main=0 base=0
+  10:41am - Parents of children who died must get compensation , free medicine must be provided to poor families across UP : Ram Gopal Yadav
+
+[TRUE=PCL] keyword=poor-families | main=0 base=0
+  We are alarmed to learn of your recently circulated proposals that would eviscerate the Lifeline program and leave many of the most vulnerable people in the country without access to affordable communications . As you are well aware , the Lifeline program provides a modest monthly subsidy of $9.25 t
+
+[TRUE=NON-PCL] keyword=in-need | main=1 base=1
+  Dacawi practically pioneered the concept of civic or community journalism in the city by writing on the plight of indigent patients , other people in need and worthwhile causes that moved people to respond .
+
+[TRUE=NON-PCL] keyword=in-need | main=1 base=1
+  " Your personal leadership has been critical to addressing the plight of the Rohingya who fled to safety in your country . I thank you for all you have done to assist these men , women and children in need , " he wrote in the message .
+
+[TRUE=NON-PCL] keyword=refugee | main=1 base=1
+  E-mail Address : * A clinic called " Hope " helps a Syrian refugee boy cope with diabetes
+
+[TRUE=NON-PCL] keyword=in-need | main=1 base=1
+  " I always consider this job as a gift , being a nurse is a reward and task given by God to help those who are in need . Seeing your patient recover from an illness , watching their families smile when you give them care , and hearing the first cry of a newborn are just some of the things that make 
+
+
+======================================================================
+  Main Correct, Baseline Wrong  (total=67)
+======================================================================
+[TRUE=PCL] keyword=women | main=1 base=0
+  " People do n't understand the hurt , people do n't understand the pain . I 've read about women with their children sleeping in cars , sleeping in hotel rooms and it 's criminal . If they 're lucky and they come across COPE Galway and the ladies in Osterley , then there 's hope . "
+
+[TRUE=PCL] keyword=in-need | main=1 base=0
+  He wants more done now to help those in need .
+
+[TRUE=PCL] keyword=in-need | main=1 base=0
+  The retailer footwear company on a mission to democratise fashion , design and the latest ideas in footwear and accessories globally , has shown its commitment to Jamaica by again providing shoes for children in need during the Christmas season .
+
+[TRUE=PCL] keyword=homeless | main=1 base=0
+  On the eve of the World Refugee Day , UNHCR received information about three new shipwrecks in the Mediterranean . It is feared that at least 130 people were dead or missing . Whatever the unpredictable Donald Trump may be doing or undoing , all our religions tell us that it is our sacred duty to gi
+
+[TRUE=NON-PCL] keyword=hopeless | main=0 base=1
+  As she descended into a state of hopelessness , she decided to do " one hopeful thing " . She bought a Golden Retriever puppy called Bunker . Little did she know how much solace he would provide ...
+
+[TRUE=NON-PCL] keyword=women | main=0 base=1
+  So , let the NPP government appointees look down upon the hardworking and selfless men and women at their own peril .
+
+[TRUE=NON-PCL] keyword=hopeless | main=0 base=1
+  " So we do need to heal ourselves as an Aboriginal Torres Strait islander community , but also as a nation . " A life of hope , not hopelessness
+
+[TRUE=NON-PCL] keyword=hopeless | main=0 base=1
+  Approve name-change or face ' hopelessness ' : Macedonia PM
+
+
+======================================================================
+  Baseline Correct, Main Wrong  (total=56)
+======================================================================
+[TRUE=PCL] keyword=disabled | main=0 base=1
+  Kyle really your a pig , lol youre also very ignorant do nt like over weight women , well have u looked in the mirror recently your FAT , YOU AND YOUR BOSS SHOULD BE SACKED never to return to radio , , how dare you say go for the disabled , your more disabled than the disabled olympians , they have 
+
+[TRUE=PCL] keyword=in-need | main=0 base=1
+  From a spiritual perspective , fasting is a time for the believer to rely on God , to give thanks and to think of others who are in need .
+
+[TRUE=PCL] keyword=poor-families | main=0 base=1
+  For ten years a group of women have been stitching love into thousands of knitted blankets and garments to help keep poor families in Eastern Europe warm .
+
+[TRUE=PCL] keyword=hopeless | main=0 base=1
+  President Muhammadu Buhari is on a divine mission to rescue the Nigeria from the brink of collapse and hopelessness , Speaker of the House of Representatives , Rt . Hon. Yakubu Dogara has said .
+
+[TRUE=NON-PCL] keyword=poor-families | main=1 base=0
+  Marcos said the government should help poor families that try every possible means to survive . With Joel Zurbano More from this Category :
+
+[TRUE=NON-PCL] keyword=women | main=1 base=0
+  " The government needs to come forward , and it needs to give resources to legal aid , so that those women and those families have their basic human rights and safety met , around representation and justice , the ability to navigate that Goliath of an office with a great deal of power , and to ensur
+
+[TRUE=NON-PCL] keyword=poor-families | main=1 base=0
+  Campaigners say over the years thousands of women , especially those from poor families , have been discarded by their husbands in this manner . Many have been rendered destitute , with nowhere to go , or have been forced to return to their parental homes or fend for themselves .
+
+[TRUE=NON-PCL] keyword=vulnerable | main=1 base=0
+  The Independent Alliance is still in talks over measures for the " most vulnerable " .
+
