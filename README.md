@@ -10,7 +10,7 @@
 | Split | F1 (positive class) |
 |-------|-------------------|
 | Official dev set | [0.6185] |
-| Official test set | 0.6140 |
+| Official test set | [0.6140] |
 
 Prediction files:
 - **[`dev.txt`](dev.txt)** — 2,093 predictions on the official dev set
